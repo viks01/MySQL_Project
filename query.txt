@@ -1,0 +1,84 @@
+create table voters (
+	id varchar(10) NOT NULL,
+	name varchar(20) DEFAULT NULL,
+	age int DEFAULT NULL,
+	aadhar_number int NOT NULL,
+	party_voted_for varchar(30) DEFAULT NULL,
+	constituency_name varchar(30) DEFAULT NULL,
+	UNIQUE(aadhar_number),
+	UNIQUE(id),
+	CONSTRAINT unique_identifier PRIMARY KEY (id, aadhar_number),
+	FORIEGN KEY (party_voted_for) REFERENCES political_parties(name),
+	FORIEGN KEY (constituency_name) REFERENCES constituencies(name),
+);
+
+create table voting_information (
+	voter_id varchar(10) NOT NULL,
+	election_phase int DEFAULT NULL,
+	election_poll_date date DEFAULT NULL,
+	UNIQUE(voter_id),
+	PRIMARY KEY (voter_id),
+	FORIEGN KEY (election_phase) REFERENCES election_schedule(phase),
+	FORIEGN KEY (election_poll_date) REFERENCES election_schedule(poll_date),
+	FORIEGN KEY (voter_id) REFERENCES voters(id)
+);
+
+create table election_schedule (
+	phase int NOT NULL,
+	poll_date date NOT NULL,
+	state varchar(30) DEFAULT NULL,
+	constituencies varchar(30) DEFAULT NULL,
+	CONSTRAINT election_time PRIMARY KEY (phase, poll_date)
+);
+
+create table political_parties (
+	name varchar(20) NOT NULL,
+	leader varchar(20),
+	symbol varchar(20),
+	type varchar(10),
+	UNIQUE(leader),
+	UNIQUE(symbol),
+	PRIMARY KEY (name)
+);
+
+create table party_supporting_unit (
+	party_name varchar(20),
+	name varchar(20) DEFAULT NULL,
+	address varchar(40),
+	memberships varchar(30),
+	office_bearers varchar(30),
+	FORIEGN KEY (party_name) REFERENCES political_parties(name)
+); 
+
+create table election_results (
+	candidate_name varchar(20) NOT NULL,
+	party_name varchar(20) NOT NULL,
+	constituency varchar(30) DEFAULT NULL,
+	number_of_votes int DEFAULT 0,
+	PRIMARY KEY (candidate_name),
+	FORIEGN KEY constituency REFERENCES constituencies(name),
+	FORIEGN KEY party_name REFERENCES political_parties(name)
+);
+
+create table constituencies (
+	name varchar(30),
+	type varchar(10) DEFAULT NULL,
+	state_name varchar(30) DEFAULT NULL,
+	PRIMARY KEY (name)
+);
+
+create table party_wise_seats (
+	party_name varchar(20) NOT NULL,
+	state_name varchar(30),
+	seats_won int,
+	PRIMARY KEY (party_name),
+	FORIEGN KEY (party_name) REFERENCES political_parties(name)
+);
+
+create table election_commission (
+	poll_date date,
+	chief_election_commissioner varchar(20),
+	commissioner varchar(20),
+	PRIMARY KEY (poll_date)
+);
+
